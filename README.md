@@ -135,97 +135,105 @@ java -cp out com.airtribe.learntrack.ui.Main
 ---
 ## Class Diagram
 
+classDiagram
 
-                   ┌──────────────────┐
-                   │      Person      │
-                   ├──────────────────┤
-                   │ - id             │
-                   │ - firstName      │
-                   │ - lastName       │
-                   │ - email          │
-                   └──────────────────┘
-                            ▲
-                            │  (Generalization / Inheritance)
-                            │
-                   ┌──────────────────┐
-                   │     Student      │
-                   ├──────────────────┤
-                   │ - batch          │
-                   │ - active         │
-                   └──────────────────┘
+%% Inheritance
+Person <|-- Student
 
+%% Entities
+class Person {
+  +int id
+  +String firstName
+  +String lastName
+  +String email
+  +getDisplayName()
+}
 
-┌──────────────────┐         1        ┌──────────────────────┐        1         ┌──────────────────┐
-│     Student      │◄───────────────►│     Enrollment        │◄───────────────►│      Course       │
-└──────────────────┘   (association) ├──────────────────────┤   (association)  └──────────────────┘
-                                    │ - id                 │
-                                    │ - studentId          │
-                                    │ - courseId           │
-                                    │ - enrollmentDate     │
-                                    │ - status             │
-                                    └──────────────────────┘
-                                          ▲
-                                          │
-                                          │ uses
-                                          │
-                               ┌────────────────────────┐
-                               │   EnrollmentService    │
-                               └────────────────────────┘
+class Student {
+  +String batch
+  +boolean active
+  +activate()
+  +deactivate()
+  +isActive()
+}
 
+class Course {
+  +int id
+  +String courseName
+  +String description
+  +int durationInWeeks
+}
 
-        ┌────────────────────┐
-        │  StudentService    │
-        └────────────────────┘
-                 ▲
-                 │ uses
-                 │
-           ┌──────────────┐
-           │   Student    │
-           └──────────────┘
+class Enrollment {
+  +int id
+  +int studentId
+  +int courseId
+  +LocalDate enrollmentDate
+  +String status
+  +setStatus()
+}
 
+%% Relationships (Many-to-Many via Enrollment)
+Student "1" --> "*" Enrollment : enrolls
+Course "1" --> "*" Enrollment : contains
 
-        ┌────────────────────┐
-        │  CourseService     │
-        └────────────────────┘
-                 ▲
-                 │ uses
-                 │
-           ┌──────────────┐
-           │   Course     │
-           └──────────────┘
+%% Services
+class StudentService {
+  +addStudent()
+  +getAllStudents()
+  +findStudentById()
+  +activateStudent()
+  +deactivateStudent()
+}
 
+class CourseService {
+  +addCourse()
+  +getAllCourses()
+  +findCourseById()
+}
 
-┌────────────────────────┐
-│     IdGenerator        │
-├────────────────────────┤
-│  (Utility - Static)    │
-└────────────────────────┘
-          ▲
-          │ used by
-          │
- ┌──────────────┬──────────────┬──────────────┐
- │   Student    │    Course    │  Enrollment  │
- └──────────────┴──────────────┴──────────────┘
+class EnrollmentService {
+  +enroll()
+  +getByStudent()
+  +findById()
+}
 
+%% UI Layer
+class Main {
+  +main()
+}
 
-┌──────────────────────────────┐
-│ EntityNotFoundException      │
-├──────────────────────────────┤
-│ <<extends Exception>>        │
-└──────────────────────────────┘
+%% Utility
+class IdGenerator {
+  <<static>>
+  +nextStudentId()
+  +nextCourseId()
+  +nextEnrollmentId()
+}
 
+%% Exception
+class EntityNotFoundException {
+  <<Exception>>
+}
 
-┌──────────────────────────────┐
-│           Main               │
-├──────────────────────────────┤
-│ (UI Layer - Console)         │
-└──────────────────────────────┘
-        │
-        │ uses
-        ▼
-┌────────────────────────────────────────────┐
-│ StudentService | CourseService | EnrollmentService │
-└────────────────────────────────────────────┘
+%% Dependencies
+Main --> StudentService : uses
+Main --> CourseService : uses
+Main --> EnrollmentService : uses
+
+StudentService --> Student : manages
+CourseService --> Course : manages
+EnrollmentService --> Enrollment : manages
+
+IdGenerator --> Student : generates ID
+IdGenerator --> Course : generates ID
+IdGenerator --> Enrollment : generates ID
+
+EntityNotFoundException <.. StudentService
+EntityNotFoundException <.. CourseService
+EntityNotFoundException <.. EnrollmentService
+               
+       
 ## Author
 
 Developed as part of Core Java learning to practice OOP, collections, and structured system design.
