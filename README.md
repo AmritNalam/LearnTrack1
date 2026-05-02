@@ -135,12 +135,11 @@ java -cp out com.airtribe.learntrack.ui.Main
 ---
 ## Class Diagram
 
+```mermaid
 classDiagram
 
-%% Inheritance
 Person <|-- Student
 
-%% Entities
 class Person {
   +int id
   +String firstName
@@ -173,11 +172,9 @@ class Enrollment {
   +setStatus()
 }
 
-%% Relationships (Many-to-Many via Enrollment)
 Student "1" --> "*" Enrollment : enrolls
 Course "1" --> "*" Enrollment : contains
 
-%% Services
 class StudentService {
   +addStudent()
   +getAllStudents()
@@ -198,12 +195,10 @@ class EnrollmentService {
   +findById()
 }
 
-%% UI Layer
 class Main {
   +main()
 }
 
-%% Utility
 class IdGenerator {
   <<static>>
   +nextStudentId()
@@ -211,27 +206,14 @@ class IdGenerator {
   +nextEnrollmentId()
 }
 
-%% Exception
 class EntityNotFoundException {
   <<Exception>>
 }
 
-%% Dependencies
-Main --> StudentService : uses
-Main --> CourseService : uses
-Main --> EnrollmentService : uses
-
-StudentService --> Student : manages
-CourseService --> Course : manages
-EnrollmentService --> Enrollment : manages
-
-IdGenerator --> Student : generates ID
-IdGenerator --> Course : generates ID
-IdGenerator --> Enrollment : generates ID
-
-EntityNotFoundException <.. StudentService
-EntityNotFoundException <.. CourseService
-EntityNotFoundException <.. EnrollmentService
+Main --> StudentService
+Main --> CourseService
+Main --> EnrollmentService
+```
                
        
 ## Author
